@@ -1,0 +1,127 @@
+"""Command-line interface for the MCP vulscanner research scaffold."""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+from typing import Callable, Sequence
+
+from .collectors.advisory_corpus import sync_advisory_corpus
+
+Handler = Callable[[argparse.Namespace], int]
+
+
+def handle_dataset_sync(args: argparse.Namespace) -> int:
+    """Validate advisory descriptors and build the normalized corpus."""
+
+    project_root = args.root.resolve()
+    summary = sync_advisory_corpus(project_root)
+    print(
+        "Validated "
+        f"{summary.descriptor_count} advisory descriptors from {summary.source_directory}."
+    )
+    print(f"Wrote normalized corpus to {summary.output_path}.")
+    print("By vulnerability_class:")
+    for name, count in summary.by_vulnerability_class.items():
+        print(f"  {name}: {count}")
+    print("By ecosystem:")
+    for name, count in summary.by_ecosystem.items():
+        print(f"  {name}: {count}")
+    return 0
+
+
+def handle_scan_quick(args: argparse.Namespace) -> int:
+    """Return a placeholder result for quick scanning."""
+
+    print(
+        "[stub] scan quick: "
+        f"TODO: run lightweight triage heuristics against target '{args.target}'."
+    )
+    return 0
+
+
+def handle_scan_deep(args: argparse.Namespace) -> int:
+    """Return a placeholder result for deep scanning."""
+
+    print(
+        "[stub] scan deep: "
+        f"TODO: orchestrate deep static/dynamic analysis for target '{args.target}'."
+    )
+    return 0
+
+
+def handle_report_render(args: argparse.Namespace) -> int:
+    """Return a placeholder result for report rendering."""
+
+    input_path = Path(args.input)
+    print(
+        "[stub] report render: "
+        f"TODO: render research report artifacts from '{input_path}'."
+    )
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """Build the top-level argument parser."""
+
+    parser = argparse.ArgumentParser(
+        prog="mcp-vulscanner",
+        description="Research-only scaffold for MCP vulnerability scanning experiments.",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    dataset_parser = subparsers.add_parser("dataset", help="Manage research datasets.")
+    dataset_subparsers = dataset_parser.add_subparsers(dest="dataset_command", required=True)
+    dataset_sync_parser = dataset_subparsers.add_parser(
+        "sync",
+        help="Sync advisories, corpora, and fixtures into the research workspace.",
+    )
+    dataset_sync_parser.add_argument(
+        "--root",
+        type=Path,
+        default=Path(__file__).resolve().parents[2],
+        help="Project root containing data/advisories and data/corpus directories.",
+    )
+    dataset_sync_parser.set_defaults(handler=handle_dataset_sync)
+
+    scan_parser = subparsers.add_parser("scan", help="Run scanner experiments.")
+    scan_subparsers = scan_parser.add_subparsers(dest="scan_command", required=True)
+
+    scan_quick_parser = scan_subparsers.add_parser(
+        "quick",
+        help="Run a quick experimental scan against a target.",
+    )
+    scan_quick_parser.add_argument("target", help="Target identifier or path to inspect.")
+    scan_quick_parser.set_defaults(handler=handle_scan_quick)
+
+    scan_deep_parser = scan_subparsers.add_parser(
+        "deep",
+        help="Run a deep experimental scan against a target.",
+    )
+    scan_deep_parser.add_argument("target", help="Target identifier or path to inspect.")
+    scan_deep_parser.set_defaults(handler=handle_scan_deep)
+
+    report_parser = subparsers.add_parser("report", help="Render research reports.")
+    report_subparsers = report_parser.add_subparsers(dest="report_command", required=True)
+    report_render_parser = report_subparsers.add_parser(
+        "render",
+        help="Render a report from an intermediate research artifact.",
+    )
+    report_render_parser.add_argument("input", help="Input artifact path.")
+    report_render_parser.set_defaults(handler=handle_report_render)
+
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """Run the CLI and print a placeholder result."""
+
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    handler: Handler = args.handler
+    try:
+        return handler(args)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
