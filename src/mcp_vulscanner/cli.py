@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import Callable, Sequence
 
 from .collectors.advisory_corpus import sync_advisory_corpus
+from .self_audit import SelfAuditWorkflow
+from .static import StaticAnalysisEngine
 
 Handler = Callable[[argparse.Namespace], int]
 
@@ -32,22 +35,20 @@ def handle_dataset_sync(args: argparse.Namespace) -> int:
 
 
 def handle_scan_quick(args: argparse.Namespace) -> int:
-    """Return a placeholder result for quick scanning."""
+    """Run the quick self-audit workflow."""
 
-    print(
-        "[stub] scan quick: "
-        f"TODO: run lightweight triage heuristics against target '{args.target}'."
-    )
+    workflow = SelfAuditWorkflow(static_engine=StaticAnalysisEngine())
+    report = workflow.run_quick(Path(args.target), output_dir=args.output_dir.resolve())
+    print(render_cli_scan_summary(report))
     return 0
 
 
 def handle_scan_deep(args: argparse.Namespace) -> int:
-    """Return a placeholder result for deep scanning."""
+    """Run the deep self-audit workflow."""
 
-    print(
-        "[stub] scan deep: "
-        f"TODO: orchestrate deep static/dynamic analysis for target '{args.target}'."
-    )
+    workflow = SelfAuditWorkflow(static_engine=StaticAnalysisEngine())
+    report = workflow.run_deep(Path(args.target), output_dir=args.output_dir.resolve())
+    print(render_cli_scan_summary(report))
     return 0
 
 
@@ -93,6 +94,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run a quick experimental scan against a target.",
     )
     scan_quick_parser.add_argument("target", help="Target identifier or path to inspect.")
+    scan_quick_parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("reports") / "self-audit",
+        help="Directory where Markdown and JSON self-audit reports will be written.",
+    )
     scan_quick_parser.set_defaults(handler=handle_scan_quick)
 
     scan_deep_parser = scan_subparsers.add_parser(
@@ -100,6 +107,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run a deep experimental scan against a target.",
     )
     scan_deep_parser.add_argument("target", help="Target identifier or path to inspect.")
+    scan_deep_parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("reports") / "self-audit",
+        help="Directory where Markdown and JSON self-audit reports will be written.",
+    )
     scan_deep_parser.set_defaults(handler=handle_scan_deep)
 
     report_parser = subparsers.add_parser("report", help="Render research reports.")
@@ -125,3 +138,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
+
+
+def render_cli_scan_summary(report: object) -> str:
+    """Render a concise CLI summary for a self-audit report."""
+
+    payload = report.to_dict()
+    return json.dumps(payload, indent=2)

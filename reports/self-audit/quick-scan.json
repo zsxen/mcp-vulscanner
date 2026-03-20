@@ -1,0 +1,121 @@
+{
+  "target": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable",
+  "mode": "quick",
+  "gate": "BLOCK",
+  "summary": "BLOCK: 3 finding(s), 0 reproduced via dynamic replay.",
+  "finding_count": 3,
+  "reproduced_count": 0,
+  "findings": [
+    {
+      "static_finding": {
+        "rule_id": "js.file-write",
+        "vulnerability_class": "arbitrary-file-write",
+        "language": "javascript",
+        "severity": "high",
+        "confidence": "high",
+        "file_path": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable/server.ts",
+        "line": 22,
+        "tool_name": "downloadArtifact",
+        "sink": "filesystem-write",
+        "symbol": null,
+        "code_snippet": "fs.writeFileSync(path.join(\"/tmp\", download_path), await response.text());",
+        "score": 6,
+        "evidence": [
+          {
+            "name": "tool-input-to-sink",
+            "score": 3,
+            "detail": "File appears to define MCP tool inputs alongside the matched sink."
+          },
+          {
+            "name": "risky-parameter-name",
+            "score": 2,
+            "detail": "Schema or code references risky parameter names: cmd, command, download_path, path, url."
+          },
+          {
+            "name": "risky-description",
+            "score": 1,
+            "detail": "Descriptions or nearby code mention shell, network, or download behavior."
+          }
+        ],
+        "message": "Potential file write or path traversal from user-controlled path input."
+      },
+      "remediation_guidance": "Constrain file output to an allowlisted workspace, resolve canonical paths, reject traversal segments, and separate user data from destination selection.",
+      "replay_trace": null
+    },
+    {
+      "static_finding": {
+        "rule_id": "js.command-injection",
+        "vulnerability_class": "command-injection",
+        "language": "javascript",
+        "severity": "high",
+        "confidence": "high",
+        "file_path": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable/server.ts",
+        "line": 20,
+        "tool_name": "downloadArtifact",
+        "sink": "child_process.exec",
+        "symbol": null,
+        "code_snippet": "execSync(`sh -c \"${cmd}\"`);",
+        "score": 6,
+        "evidence": [
+          {
+            "name": "tool-input-to-sink",
+            "score": 3,
+            "detail": "File appears to define MCP tool inputs alongside the matched sink."
+          },
+          {
+            "name": "risky-parameter-name",
+            "score": 2,
+            "detail": "Schema or code references risky parameter names: cmd, command, download_path, path, url."
+          },
+          {
+            "name": "risky-description",
+            "score": 1,
+            "detail": "Descriptions or nearby code mention shell, network, or download behavior."
+          }
+        ],
+        "message": "Potential command execution from user-controlled input."
+      },
+      "remediation_guidance": "Avoid shell execution with untrusted input. Prefer argument arrays, allowlists, and explicit command dispatch without string interpolation.",
+      "replay_trace": null
+    },
+    {
+      "static_finding": {
+        "rule_id": "js.ssrf",
+        "vulnerability_class": "ssrf",
+        "language": "javascript",
+        "severity": "high",
+        "confidence": "high",
+        "file_path": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable/server.ts",
+        "line": 21,
+        "tool_name": "downloadArtifact",
+        "sink": "network-request",
+        "symbol": null,
+        "code_snippet": "const response = await fetch(url, { headers: { \"x-base-url\": url } });",
+        "score": 6,
+        "evidence": [
+          {
+            "name": "tool-input-to-sink",
+            "score": 3,
+            "detail": "File appears to define MCP tool inputs alongside the matched sink."
+          },
+          {
+            "name": "risky-parameter-name",
+            "score": 2,
+            "detail": "Schema or code references risky parameter names: cmd, command, download_path, path, url."
+          },
+          {
+            "name": "risky-description",
+            "score": 1,
+            "detail": "Descriptions or nearby code mention shell, network, or download behavior."
+          }
+        ],
+        "message": "Potential outbound request from user-controlled URL or request metadata."
+      },
+      "remediation_guidance": "Disallow caller-controlled outbound destinations. Normalize and allowlist hosts, strip dangerous headers/query overrides, and block redirect chains to untrusted origins.",
+      "replay_trace": null
+    }
+  ],
+  "reproduced_findings": [],
+  "markdown_report_path": "/Users/sujinjeong/Git/mcp-vulscanner/reports/self-audit/quick-scan.md",
+  "json_report_path": "/Users/sujinjeong/Git/mcp-vulscanner/reports/self-audit/quick-scan.json"
+}

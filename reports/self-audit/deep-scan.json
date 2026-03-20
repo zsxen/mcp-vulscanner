@@ -1,0 +1,12 @@
+{
+  "target": "/private/var/folders/9k/8p_584tx0_n28hpw6_w4gk0c0000gn/T/tmp4vamgjeo/server.ts",
+  "mode": "deep",
+  "gate": "PASS",
+  "summary": "PASS: 0 finding(s), 0 reproduced via dynamic replay.",
+  "finding_count": 0,
+  "reproduced_count": 0,
+  "findings": [],
+  "reproduced_findings": [],
+  "markdown_report_path": "/Users/sujinjeong/Git/mcp-vulscanner/reports/self-audit/deep-scan.md",
+  "json_report_path": "/Users/sujinjeong/Git/mcp-vulscanner/reports/self-audit/deep-scan.json"
+}

@@ -61,18 +61,30 @@ class CliTests(unittest.TestCase):
         self.assertIn("By vulnerability_class:", output)
 
     def test_scan_quick_stub(self) -> None:
-        """The quick scan command should echo the target in its stub output."""
+        """The quick scan command should output a structured JSON report."""
 
-        exit_code, output = self.run_cli("scan", "quick", "demo-target")
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            target = Path(tmp_dir) / "server.py"
+            target.write_text("def ok():\n    return None\n", encoding="utf-8")
+            exit_code, output = self.run_cli("scan", "quick", str(target))
+
         self.assertEqual(exit_code, 0)
-        self.assertIn("demo-target", output)
+        payload = json.loads(output)
+        self.assertEqual(payload["mode"], "quick")
+        self.assertEqual(payload["finding_count"], 0)
 
     def test_scan_deep_stub(self) -> None:
-        """The deep scan command should echo the target in its stub output."""
+        """The deep scan command should output a structured JSON report."""
 
-        exit_code, output = self.run_cli("scan", "deep", "demo-target")
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            target = Path(tmp_dir) / "server.ts"
+            target.write_text("export function ok() { return true; }\n", encoding="utf-8")
+            exit_code, output = self.run_cli("scan", "deep", str(target))
+
         self.assertEqual(exit_code, 0)
-        self.assertIn("deep", output)
+        payload = json.loads(output)
+        self.assertEqual(payload["mode"], "deep")
+        self.assertEqual(payload["finding_count"], 0)
 
     def test_report_render_stub(self) -> None:
         """The report render command should echo the input path."""
