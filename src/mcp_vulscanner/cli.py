@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Callable, Sequence
 
 from .collectors.advisory_corpus import sync_advisory_corpus
+from .eval.run import run_batch
+from .eval import validate_corpus
 from .self_audit import SelfAuditWorkflow
 from .static import StaticAnalysisEngine
 
@@ -63,6 +65,28 @@ def handle_report_render(args: argparse.Namespace) -> int:
     return 0
 
 
+def handle_eval_validate_corpus(args: argparse.Namespace) -> int:
+    """Validate the paper evaluation corpus manifests."""
+
+    summary = validate_corpus(args.root.resolve())
+    print(f"Validated {summary.target_count} corpus targets.")
+    print("By vulnerability_class:")
+    for name, count in summary.by_vulnerability_class.items():
+        print(f"  {name}: {count}")
+    print("By expected_label:")
+    for name, count in summary.by_expected_label.items():
+        print(f"  {name}: {count}")
+    return 0
+
+
+def handle_eval_run(args: argparse.Namespace) -> int:
+    """Run a minimal batch evaluation over the compact paper corpus."""
+
+    summary = run_batch(args.manifest.resolve(), mode=args.mode, output_root=args.output_root.resolve())
+    print(json.dumps(summary, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build the top-level argument parser."""
 
@@ -114,6 +138,43 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory where Markdown and JSON self-audit reports will be written.",
     )
     scan_deep_parser.set_defaults(handler=handle_scan_deep)
+
+    eval_parser = subparsers.add_parser("eval", help="Manage evaluation artifacts.")
+    eval_subparsers = eval_parser.add_subparsers(dest="eval_command", required=True)
+    eval_validate_parser = eval_subparsers.add_parser(
+        "validate-corpus",
+        help="Validate the compact paper evaluation corpus manifests.",
+    )
+    eval_validate_parser.add_argument(
+        "--root",
+        type=Path,
+        default=Path(__file__).resolve().parents[2],
+        help="Project root containing data/corpus manifests.",
+    )
+    eval_validate_parser.set_defaults(handler=handle_eval_validate_corpus)
+    eval_run_parser = eval_subparsers.add_parser(
+        "run",
+        help="Run a minimal batch evaluation over the current corpus manifest.",
+    )
+    eval_run_parser.add_argument(
+        "--manifest",
+        type=Path,
+        required=True,
+        help="Path to the compact corpus manifest.",
+    )
+    eval_run_parser.add_argument(
+        "--mode",
+        choices=("static", "hybrid"),
+        required=True,
+        help="Whether to run static-only or static plus minimal stdio replay.",
+    )
+    eval_run_parser.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("results"),
+        help="Directory where raw, report, and aggregate outputs will be written.",
+    )
+    eval_run_parser.set_defaults(handler=handle_eval_run)
 
     report_parser = subparsers.add_parser("report", help="Render research reports.")
     report_subparsers = report_parser.add_subparsers(dest="report_command", required=True)

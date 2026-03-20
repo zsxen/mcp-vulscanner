@@ -1,0 +1,22 @@
+{
+  "target_id": "pos-hackmd-write",
+  "project_name": "hackmd-mcp",
+  "vulnerability_class": "arbitrary-file-write",
+  "expected_label": "positive",
+  "mode": "hybrid",
+  "static_findings_count": 1,
+  "tool_called": "write_file",
+  "dynamic_attempted": true,
+  "verdict": "CONFIRMED",
+  "evidence": {
+    "static_fixture": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/python/vulnerable",
+    "matching_static_findings": 1,
+    "created_files": [
+      "pos-hackmd-write/proof.txt"
+    ],
+    "modified_files": [],
+    "stderr_lines": [],
+    "outbound_requests": []
+  },
+  "errors": []
+}

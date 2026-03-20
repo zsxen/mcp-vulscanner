@@ -1,0 +1,67 @@
+{
+  "projects": [
+    {
+      "project_name": "@akoskm/create-mcp-server-stdio",
+      "static_findings": 1,
+      "hybrid_findings": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 0
+    },
+    {
+      "project_name": "@azure/mcp",
+      "static_findings": 1,
+      "hybrid_findings": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 0
+    },
+    {
+      "project_name": "figma-developer-mcp",
+      "static_findings": 1,
+      "hybrid_findings": 1,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 1
+    },
+    {
+      "project_name": "hackmd-mcp",
+      "static_findings": 1,
+      "hybrid_findings": 2,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 2
+    },
+    {
+      "project_name": "mcp-atlassian",
+      "static_findings": 0,
+      "hybrid_findings": 0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 0
+    },
+    {
+      "project_name": "mcp-fetch-server",
+      "static_findings": 1,
+      "hybrid_findings": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 0
+    },
+    {
+      "project_name": "mcp-server-kubernetes",
+      "static_findings": 1,
+      "hybrid_findings": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 0
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "result": {
+    "target_id": "neg-hackmd-clean",
+    "mode": "stdio",
+    "static_findings_count": 0,
+    "tool_called": "write_file",
+    "dynamic_attempted": true,
+    "verdict": "CONFIRMED",
+    "evidence": {
+      "created_files": [
+        "neg-hackmd-clean/proof.txt"
+      ],
+      "modified_files": [],
+      "stderr_lines": [],
+      "outbound_requests": []
+    },
+    "errors": [],
+    "trace_path": "/Users/sujinjeong/Git/mcp-vulscanner/results/reports/neg-hackmd-clean/execution-trace.json",
+    "report_path": "/Users/sujinjeong/Git/mcp-vulscanner/results/reports/neg-hackmd-clean/replay-report.md"
+  },
+  "command": "/Users/sujinjeong/Git/mcp-vulscanner/.venv/bin/python /Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/dynamic/paper_stdio_vulnerable_server.py",
+  "arguments": {
+    "path": "neg-hackmd-clean/proof.txt",
+    "content": "paper"
+  },
+  "available_tools": [
+    {
+      "name": "write_file",
+      "description": "Write caller-controlled content to a caller-controlled path",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    }
+  ],
+  "rpc_records": [
+    {
+      "direction": "request",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+          "protocolVersion": "2025-03-26",
+          "capabilities": {}
+        }
+      }
+    },
+    {
+      "direction": "response",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "capabilities": {}
+        }
+      }
+    },
+    {
+      "direction": "request",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "tools/list",
+        "params": {}
+      }
+    },
+    {
+      "direction": "response",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "result": {
+          "tools": [
+            {
+              "name": "write_file",
+              "description": "Write caller-controlled content to a caller-controlled path",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "path"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "direction": "request",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "method": "tools/call",
+        "params": {
+          "name": "write_file",
+          "arguments": {
+            "path": "neg-hackmd-clean/proof.txt",
+            "content": "paper"
+          }
+        }
+      }
+    },
+    {
+      "direction": "response",
+      "payload": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "result": {
+          "content": {
+            "path": "/Users/sujinjeong/Git/mcp-vulscanner/results/reports/neg-hackmd-clean/workspace/neg-hackmd-clean/proof.txt"
+          }
+        }
+      }
+    }
+  ],
+  "tool_call_response": {
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": {
+      "content": {
+        "path": "/Users/sujinjeong/Git/mcp-vulscanner/results/reports/neg-hackmd-clean/workspace/neg-hackmd-clean/proof.txt"
+      }
+    }
+  }
+}

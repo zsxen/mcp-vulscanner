@@ -1,0 +1,22 @@
+{
+  "target_id": "neg-hackmd-clean",
+  "project_name": "hackmd-mcp",
+  "vulnerability_class": "arbitrary-file-write",
+  "expected_label": "negative",
+  "mode": "hybrid",
+  "static_findings_count": 0,
+  "tool_called": "write_file",
+  "dynamic_attempted": true,
+  "verdict": "CONFIRMED",
+  "evidence": {
+    "static_fixture": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/python/patched",
+    "matching_static_findings": 0,
+    "created_files": [
+      "neg-hackmd-clean/proof.txt"
+    ],
+    "modified_files": [],
+    "stderr_lines": [],
+    "outbound_requests": []
+  },
+  "errors": []
+}

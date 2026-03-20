@@ -1,0 +1,22 @@
+{
+  "target_id": "neg-k8s-clean",
+  "project_name": "mcp-server-kubernetes",
+  "vulnerability_class": "command-injection",
+  "expected_label": "negative",
+  "mode": "hybrid",
+  "static_findings_count": 0,
+  "tool_called": "",
+  "dynamic_attempted": false,
+  "verdict": "UNCONFIRMED",
+  "evidence": {
+    "static_fixture": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/python/patched",
+    "matching_static_findings": 0,
+    "created_files": [],
+    "modified_files": [],
+    "stderr_lines": [],
+    "outbound_requests": []
+  },
+  "errors": [
+    "hybrid replay skipped: stdio arbitrary-file-write only"
+  ]
+}

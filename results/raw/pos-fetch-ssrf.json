@@ -1,0 +1,22 @@
+{
+  "target_id": "pos-fetch-ssrf",
+  "project_name": "mcp-fetch-server",
+  "vulnerability_class": "ssrf",
+  "expected_label": "positive",
+  "mode": "hybrid",
+  "static_findings_count": 1,
+  "tool_called": "",
+  "dynamic_attempted": false,
+  "verdict": "UNCONFIRMED",
+  "evidence": {
+    "static_fixture": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/python/vulnerable",
+    "matching_static_findings": 1,
+    "created_files": [],
+    "modified_files": [],
+    "stderr_lines": [],
+    "outbound_requests": []
+  },
+  "errors": [
+    "hybrid replay skipped: stdio arbitrary-file-write only"
+  ]
+}
