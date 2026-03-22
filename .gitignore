@@ -10,9 +10,8 @@ __pycache__/
 .uv-cache/
 dist/
 build/
-data/advisories/*
-!data/advisories/.gitkeep
-data/corpus/*
-!data/corpus/.gitkeep
-data/fixtures/*
-!data/fixtures/.gitkeep
+
+# Keep research fixtures and corpus tracked in git.
+# Ignore only generated outputs if needed.
+results/
+paper/generated/
