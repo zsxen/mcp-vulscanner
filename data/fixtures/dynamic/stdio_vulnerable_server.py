@@ -75,8 +75,8 @@ def fetch_url(arguments: dict[str, Any]) -> dict[str, Any]:
     },
 )
 def write_file(arguments: dict[str, Any]) -> dict[str, Any]:
-    relative_path = str(arguments["path"])
-    target = Path(relative_path)
+    path = str(arguments["path"])
+    target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(str(arguments.get("content", "")), encoding="utf-8")
     return {"content": [{"type": "text", "text": str(target)}]}
