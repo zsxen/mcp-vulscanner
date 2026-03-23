@@ -1,0 +1,12 @@
+[
+  {"target_id": "pos-k8s-cmdi", "expected_label": "positive"},
+  {"target_id": "pos-akoskm-cmdi", "expected_label": "positive"},
+  {"target_id": "pos-figma-cmdi", "expected_label": "positive"},
+  {"target_id": "pos-hackmd-ssrf", "expected_label": "positive"},
+  {"target_id": "pos-fetch-ssrf", "expected_label": "positive"},
+  {"target_id": "pos-atlassian-file", "expected_label": "positive"},
+  {"target_id": "neg-safe-python-file", "expected_label": "negative"},
+  {"target_id": "neg-safe-javascript-cmdi", "expected_label": "negative"},
+  {"target_id": "neg-safe-http-ssrf", "expected_label": "negative"},
+  {"target_id": "neg-safe-stdio-file", "expected_label": "negative"}
+]
