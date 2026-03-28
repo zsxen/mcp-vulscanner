@@ -24,6 +24,7 @@
 
 - Run `mcp-vulscanner scan deep <target-or-config>`
 - Record reproduced findings and replay verdicts
+- Treat deep scan as CADER-MCP: contract extraction, runtime tool binding, baseline-versus-malicious replay, and differential evidence scoring
 - Compare which static findings remain unreproduced versus confirmed
 
 ## Dataset Plan
@@ -38,8 +39,20 @@
 - Per-project comparison of static-only versus hybrid findings
 - Aggregate summary statistics across ecosystems and vulnerability classes
 
+## CADER-MCP Report Counters
+
+- `raw_findings`: all static findings before runtime scoping
+- `scoped_findings`: findings that can be mapped to an MCP tool candidate
+- `replayable_findings`: scoped findings that bind to a runtime tool and enter replay denominators
+- `contract_valid_replays`: replays that completed the MCP lifecycle and yielded a usable runtime contract
+- `binding_success_rate`: `replayable_findings / scoped_findings`
+- `confirmed_findings`: replayable findings with a malicious-only forbidden delta versus baseline
+- `differential_confirmation_rate`: `confirmed_findings / replayable_findings`
+- `scope_noise_ratio`: `(raw_findings - scoped_findings) / raw_findings`
+
 ## Reporting Notes
 
 - Separate scanner capability claims from dataset coverage claims
 - Clearly mark manually curated labels and assumptions
 - Report cases where replay is inconclusive or unavailable
+- Exclude non-replayable findings from confirmation-rate denominators

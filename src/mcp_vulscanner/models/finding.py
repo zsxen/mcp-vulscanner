@@ -33,6 +33,8 @@ class StaticFinding:
     score: int
     evidence: list[EvidenceFeature]
     message: str
+    reachable: bool = True
+    suppression_reason: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable representation of the finding."""
@@ -47,6 +49,9 @@ class ScanReport:
     target: str
     mode: str
     findings: list[StaticFinding]
+    raw_findings: int = 0
+    scope_excluded_findings: int = 0
+    suppression_reasons: dict[str, int] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable representation of the report."""
@@ -54,6 +59,10 @@ class ScanReport:
         return {
             "target": self.target,
             "mode": self.mode,
+            "raw_findings": self.raw_findings or len(self.findings),
+            "scope_excluded_findings": self.scope_excluded_findings,
+            "scoped_findings": len(self.findings),
             "finding_count": len(self.findings),
+            "suppression_reasons": self.suppression_reasons or {},
             "findings": [finding.to_dict() for finding in self.findings],
         }

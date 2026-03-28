@@ -27,6 +27,26 @@ uv run mcp-vulscanner scan deep sample-target
 uv run mcp-vulscanner report render sample-input.json
 ```
 
+## CADER-MCP deep scan
+
+`scan deep` now uses CADER-MCP: Contract-Aware Differential Exploit Replay for MCP servers. The deep path keeps the existing CLI stable while replacing single-shot replay with:
+
+- lifecycle-aware contract extraction through `initialize`, `notifications/initialized`, `tools/list`, and optional roots bootstrap
+- candidate-to-tool binding so only runtime-bound findings count toward replay confirmation
+- differential replay with one schema-valid baseline input plus malicious variants
+- evidence-oriented verdicts based on malicious-only deltas in process, file-system, HTTP, and error traces
+
+Deep scan reports now expose paper-oriented counters:
+
+- `raw_findings`
+- `scoped_findings`
+- `replayable_findings`
+- `contract_valid_replays`
+- `binding_success_rate`
+- `confirmed_findings`
+- `differential_confirmation_rate`
+- `scope_noise_ratio`
+
 ## Development
 
 ```bash

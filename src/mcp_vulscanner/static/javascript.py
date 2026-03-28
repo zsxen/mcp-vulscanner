@@ -5,7 +5,14 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from .base import RuleMatch, SourceFile, StaticAnalyzer, infer_tool_name, score_features
+from .base import (
+    RuleMatch,
+    SourceFile,
+    StaticAnalyzer,
+    executable_sink_evidence,
+    infer_tool_name,
+    score_features,
+)
 
 
 COMMAND_PATTERNS = (
@@ -42,10 +49,12 @@ class JavaScriptAnalyzer(StaticAnalyzer):
         """Analyze JS/TS content with regex-driven heuristics."""
 
         matches: list[RuleMatch] = []
+        sanitized = _strip_js_comments(source_file.content)
         lines = source_file.content.splitlines()
         matches.extend(
             self._scan_patterns(
                 source_file.content,
+                sanitized,
                 lines,
                 COMMAND_PATTERNS,
                 "js.command-injection",
@@ -57,6 +66,7 @@ class JavaScriptAnalyzer(StaticAnalyzer):
         matches.extend(
             self._scan_patterns(
                 source_file.content,
+                sanitized,
                 lines,
                 SSRF_PATTERNS,
                 "js.ssrf",
@@ -68,6 +78,7 @@ class JavaScriptAnalyzer(StaticAnalyzer):
         matches.extend(
             self._scan_patterns(
                 source_file.content,
+                sanitized,
                 lines,
                 FILE_PATTERNS,
                 "js.file-write",
@@ -81,6 +92,7 @@ class JavaScriptAnalyzer(StaticAnalyzer):
     def _scan_patterns(
         self,
         source_text: str,
+        sanitized_text: str,
         lines: list[str],
         patterns: tuple[re.Pattern[str], ...],
         rule_id: str,
@@ -93,23 +105,42 @@ class JavaScriptAnalyzer(StaticAnalyzer):
         findings: list[RuleMatch] = []
         seen_lines: set[int] = set()
         for pattern in patterns:
-            for matched in pattern.finditer(source_text):
-                line = source_text.count("\n", 0, matched.start()) + 1
+            for matched in pattern.finditer(sanitized_text):
+                line = sanitized_text.count("\n", 0, matched.start()) + 1
                 if line in seen_lines:
                     continue
                 seen_lines.add(line)
                 snippet = lines[line - 1].strip()
+                tool_name = infer_tool_name(source_text, matched.start())
+                reachable = tool_name is not None
                 findings.append(
                     RuleMatch(
                         rule_id=rule_id,
                         vulnerability_class=vulnerability_class,
                         line=line,
-                        tool_name=infer_tool_name(source_text, matched.start()),
+                        tool_name=tool_name,
                         sink=sink,
                         symbol=None,
                         snippet=snippet,
-                        evidence=score_features(source_text, snippet),
+                        evidence=[
+                            executable_sink_evidence(sink),
+                            *score_features(
+                                source_text,
+                                snippet,
+                                tool_name=tool_name,
+                                reachable=reachable,
+                            ),
+                        ],
                         message=message,
+                        reachable=reachable,
+                        suppression_reason=None if reachable else "unreachable_tool",
                     )
                 )
         return findings
+
+
+def _strip_js_comments(source_text: str) -> str:
+    """Remove line and block comments while preserving line numbers."""
+
+    text = re.sub(r"/\*.*?\*/", lambda match: "".join("\n" if char == "\n" else " " for char in match.group(0)), source_text, flags=re.S)
+    return re.sub(r"//.*", "", text)

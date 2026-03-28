@@ -98,3 +98,20 @@ class SelfAuditWorkflowTests(unittest.TestCase):
 
         self.assertTrue(payload["findings"])
         self.assertTrue(all(item["remediation_guidance"] for item in payload["findings"]))
+
+    def test_deep_scan_reports_zero_replayable_after_scope_filtering(self) -> None:
+        """Deep scan should not imply dynamic attempts for unreachable static findings."""
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            report = self.workflow.run_deep(
+                STATIC_FIXTURES_DIR / "python" / "noise" / "unreachable_helper.py",
+                output_dir=Path(tmp_dir),
+            )
+
+        self.assertEqual(report.raw_findings, 1)
+        self.assertEqual(report.scope_excluded_findings, 1)
+        self.assertEqual(report.replayable_findings, 0)
+        self.assertEqual(
+            report.summary,
+            "WARN: 1 raw finding(s), 0 replayable findings after scope filtering.",
+        )

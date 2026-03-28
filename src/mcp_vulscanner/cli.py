@@ -40,7 +40,12 @@ def handle_scan_quick(args: argparse.Namespace) -> int:
     """Run the quick self-audit workflow."""
 
     workflow = SelfAuditWorkflow(static_engine=StaticAnalysisEngine())
-    report = workflow.run_quick(Path(args.target), output_dir=args.output_dir.resolve())
+    report = workflow.run_quick(
+        Path(args.target),
+        output_dir=args.output_dir.resolve(),
+        include_vendor=args.include_vendor,
+        include_tests=args.include_tests,
+    )
     print(render_cli_scan_summary(report))
     return 0
 
@@ -49,7 +54,12 @@ def handle_scan_deep(args: argparse.Namespace) -> int:
     """Run the deep self-audit workflow."""
 
     workflow = SelfAuditWorkflow(static_engine=StaticAnalysisEngine())
-    report = workflow.run_deep(Path(args.target), output_dir=args.output_dir.resolve())
+    report = workflow.run_deep(
+        Path(args.target),
+        output_dir=args.output_dir.resolve(),
+        include_vendor=args.include_vendor,
+        include_tests=args.include_tests,
+    )
     print(render_cli_scan_summary(report))
     return 0
 
@@ -124,6 +134,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("reports") / "self-audit",
         help="Directory where Markdown and JSON self-audit reports will be written.",
     )
+    scan_quick_parser.add_argument(
+        "--include-vendor",
+        action="store_true",
+        help="Include vendor/build/cache paths in the default scan scope.",
+    )
+    scan_quick_parser.add_argument(
+        "--include-tests",
+        action="store_true",
+        help="Include test directories in the default scan scope.",
+    )
     scan_quick_parser.set_defaults(handler=handle_scan_quick)
 
     scan_deep_parser = scan_subparsers.add_parser(
@@ -136,6 +156,16 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("reports") / "self-audit",
         help="Directory where Markdown and JSON self-audit reports will be written.",
+    )
+    scan_deep_parser.add_argument(
+        "--include-vendor",
+        action="store_true",
+        help="Include vendor/build/cache paths in the default scan scope.",
+    )
+    scan_deep_parser.add_argument(
+        "--include-tests",
+        action="store_true",
+        help="Include test directories in the default scan scope.",
     )
     scan_deep_parser.set_defaults(handler=handle_scan_deep)
 

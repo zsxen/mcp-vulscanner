@@ -1,16 +1,7 @@
 {
   "projects": [
     {
-      "project_name": "@akoskm/create-mcp-server-stdio",
-      "static_findings": 1,
-      "hybrid_findings": 0,
-      "true_positives": 1,
-      "false_positives": 0,
-      "false_negatives": 0,
-      "confirmed_findings": 0
-    },
-    {
-      "project_name": "@azure/mcp",
+      "project_name": "create-mcp-server-stdio",
       "static_findings": 1,
       "hybrid_findings": 0,
       "true_positives": 1,
@@ -21,26 +12,62 @@
     {
       "project_name": "figma-developer-mcp",
       "static_findings": 1,
-      "hybrid_findings": 1,
+      "hybrid_findings": 0,
       "true_positives": 1,
       "false_positives": 0,
       "false_negatives": 0,
-      "confirmed_findings": 1
+      "confirmed_findings": 0
+    },
+    {
+      "project_name": "fixture-safe-http",
+      "static_findings": 0,
+      "hybrid_findings": 0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 0
+    },
+    {
+      "project_name": "fixture-safe-javascript",
+      "static_findings": 0,
+      "hybrid_findings": 0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 0
+    },
+    {
+      "project_name": "fixture-safe-python",
+      "static_findings": 0,
+      "hybrid_findings": 0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 0
+    },
+    {
+      "project_name": "fixture-safe-stdio",
+      "static_findings": 0,
+      "hybrid_findings": 0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "confirmed_findings": 0
     },
     {
       "project_name": "hackmd-mcp",
       "static_findings": 1,
-      "hybrid_findings": 2,
+      "hybrid_findings": 0,
       "true_positives": 1,
       "false_positives": 0,
       "false_negatives": 0,
-      "confirmed_findings": 2
+      "confirmed_findings": 0
     },
     {
       "project_name": "mcp-atlassian",
-      "static_findings": 0,
+      "static_findings": 1,
       "hybrid_findings": 0,
-      "true_positives": 0,
+      "true_positives": 1,
       "false_positives": 0,
       "false_negatives": 0,
       "confirmed_findings": 0

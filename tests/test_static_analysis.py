@@ -68,3 +68,40 @@ class StaticAnalysisEngineTests(unittest.TestCase):
         self.assertTrue(
             all("score" in finding["static_finding"] for finding in payload["findings"])
         )
+
+    def test_comment_only_fetch_noise_does_not_trigger_file_write(self) -> None:
+        """A fetch-like runtime call should stay SSRF-only when path words only appear in comments."""
+
+        report = self.engine.analyze_target(
+            FIXTURES_DIR / "python" / "noise" / "fetch_comment_only.py",
+            mode="quick",
+        )
+
+        classes = [finding.vulnerability_class for finding in report.findings]
+        self.assertEqual(classes, ["ssrf"])
+        self.assertEqual(report.scope_excluded_findings, 0)
+
+    def test_tests_tree_is_suppressed_by_default(self) -> None:
+        """Default scope filtering should exclude findings under __tests__."""
+
+        report = self.engine.analyze_target(
+            FIXTURES_DIR / "python" / "noise",
+            mode="quick",
+        )
+
+        self.assertEqual(report.raw_findings, 3)
+        self.assertEqual(report.scope_excluded_findings, 2)
+        self.assertEqual(report.suppression_reasons, {"test_path": 1, "unreachable_tool": 1})
+        self.assertEqual([finding.vulnerability_class for finding in report.findings], ["ssrf"])
+
+    def test_include_tests_override_restores_test_findings(self) -> None:
+        """The include-tests override should re-include suppressed __tests__ findings."""
+
+        report = self.engine.analyze_target(
+            FIXTURES_DIR / "python" / "noise",
+            mode="quick",
+            include_tests=True,
+        )
+
+        classes = {finding.vulnerability_class for finding in report.findings}
+        self.assertEqual(classes, {"ssrf", "arbitrary-file-write"})

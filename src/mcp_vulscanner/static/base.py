@@ -12,6 +12,19 @@ from mcp_vulscanner.models.finding import EvidenceFeature, StaticFinding
 
 RISKY_SCHEMA_FIELDS = ("cmd", "command", "url", "path", "download_path", "base_url")
 RISKY_DESCRIPTION_TERMS = ("shell", "network", "download", "fetch", "http", "url")
+DEFAULT_VENDOR_PATH_PARTS = {
+    ".venv",
+    "venv",
+    "site-packages",
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+}
+DEFAULT_TEST_PATH_PARTS = {"__tests__", "tests"}
 
 
 @dataclass(frozen=True)
@@ -36,6 +49,8 @@ class RuleMatch:
     snippet: str
     evidence: list[EvidenceFeature]
     message: str
+    reachable: bool = True
+    suppression_reason: str | None = None
 
 
 class StaticAnalyzer(Protocol):
@@ -79,7 +94,10 @@ def finalize_finding(source_file: SourceFile, match: RuleMatch) -> StaticFinding
     """Convert a low-level rule match into a structured finding."""
 
     score = sum(feature.score for feature in match.evidence)
-    if score >= 6:
+    if not match.reachable:
+        severity = "low"
+        confidence = "low"
+    elif score >= 6:
         severity = "high"
         confidence = "high"
     elif score >= 4:
@@ -104,21 +122,31 @@ def finalize_finding(source_file: SourceFile, match: RuleMatch) -> StaticFinding
         score=score,
         evidence=match.evidence,
         message=match.message,
+        reachable=match.reachable,
+        suppression_reason=match.suppression_reason,
     )
 
 
-def score_features(source_text: str, snippet: str) -> list[EvidenceFeature]:
+def score_features(
+    source_text: str,
+    snippet: str,
+    *,
+    tool_name: str | None,
+    reachable: bool,
+) -> list[EvidenceFeature]:
     """Apply the shared scoring model to a matched sink."""
 
     evidence: list[EvidenceFeature] = []
     lowered_text = source_text.lower()
     lowered_snippet = snippet.lower()
 
-    if "inputschema" in lowered_text or "argumentsschema" in lowered_text or "tool(" in lowered_text:
+    if reachable and tool_name and (
+        "inputschema" in lowered_text or "argumentsschema" in lowered_text or "tool(" in lowered_text
+    ):
         evidence.append(
             EvidenceFeature(
                 name="tool-input-to-sink",
-                score=3,
+                score=2,
                 detail="File appears to define MCP tool inputs alongside the matched sink.",
             )
         )
@@ -132,7 +160,7 @@ def score_features(source_text: str, snippet: str) -> list[EvidenceFeature]:
         evidence.append(
             EvidenceFeature(
                 name="risky-parameter-name",
-                score=2,
+                score=1,
                 detail=f"Schema or code references risky parameter names: {', '.join(sorted(set(risky_fields)))}.",
             )
         )
@@ -148,6 +176,32 @@ def score_features(source_text: str, snippet: str) -> list[EvidenceFeature]:
         )
 
     return evidence
+
+
+def executable_sink_evidence(sink: str) -> EvidenceFeature:
+    """Return the primary evidence feature for an executable sink."""
+
+    return EvidenceFeature(
+        name="executable-sink",
+        score=3,
+        detail=f"Executable sink matched in runtime code: {sink}.",
+    )
+
+
+def classify_scope_reason(
+    path: Path,
+    *,
+    include_vendor: bool,
+    include_tests: bool,
+) -> str | None:
+    """Return a default scope suppression reason for a path, if any."""
+
+    lowered_parts = {part.lower() for part in path.parts}
+    if not include_vendor and lowered_parts & DEFAULT_VENDOR_PATH_PARTS:
+        return "vendor_path"
+    if not include_tests and lowered_parts & DEFAULT_TEST_PATH_PARTS:
+        return "test_path"
+    return None
 
 
 def infer_tool_name(source_text: str, match_offset: int) -> str | None:

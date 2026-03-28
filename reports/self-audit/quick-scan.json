@@ -2,9 +2,19 @@
   "target": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable",
   "mode": "quick",
   "gate": "BLOCK",
-  "summary": "BLOCK: 3 finding(s), 0 reproduced via dynamic replay.",
+  "summary": "BLOCK: 3 raw finding(s), 0 replayable findings after scope filtering.",
   "finding_count": 3,
   "reproduced_count": 0,
+  "raw_findings": 3,
+  "scope_excluded_findings": 0,
+  "scoped_findings": 3,
+  "replayable_findings": 0,
+  "contract_valid_replays": 0,
+  "binding_success_rate": 0.0,
+  "confirmed_findings": 0,
+  "differential_confirmation_rate": 0.0,
+  "scope_noise_ratio": 0.0,
+  "suppression_reasons": {},
   "findings": [
     {
       "static_finding": {
@@ -13,23 +23,28 @@
         "language": "javascript",
         "severity": "high",
         "confidence": "high",
-        "file_path": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable/server.ts",
-        "line": 22,
-        "tool_name": "downloadArtifact",
+        "file_path": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable/index.js",
+        "line": 42,
+        "tool_name": "write_file",
         "sink": "filesystem-write",
         "symbol": null,
-        "code_snippet": "fs.writeFileSync(path.join(\"/tmp\", download_path), await response.text());",
-        "score": 6,
+        "code_snippet": "fs.writeFileSync(path, content, \"utf8\");",
+        "score": 7,
         "evidence": [
           {
-            "name": "tool-input-to-sink",
+            "name": "executable-sink",
             "score": 3,
+            "detail": "Executable sink matched in runtime code: filesystem-write."
+          },
+          {
+            "name": "tool-input-to-sink",
+            "score": 2,
             "detail": "File appears to define MCP tool inputs alongside the matched sink."
           },
           {
             "name": "risky-parameter-name",
-            "score": 2,
-            "detail": "Schema or code references risky parameter names: cmd, command, download_path, path, url."
+            "score": 1,
+            "detail": "Schema or code references risky parameter names: cmd, command, path, url."
           },
           {
             "name": "risky-description",
@@ -37,10 +52,14 @@
             "detail": "Descriptions or nearby code mention shell, network, or download behavior."
           }
         ],
-        "message": "Potential file write or path traversal from user-controlled path input."
+        "message": "Potential file write or path traversal from user-controlled path input.",
+        "reachable": true,
+        "suppression_reason": null
       },
       "remediation_guidance": "Constrain file output to an allowlisted workspace, resolve canonical paths, reject traversal segments, and separate user data from destination selection.",
-      "replay_trace": null
+      "replay_trace": null,
+      "replayable": true,
+      "non_replayable_reason": null
     },
     {
       "static_finding": {
@@ -49,23 +68,28 @@
         "language": "javascript",
         "severity": "high",
         "confidence": "high",
-        "file_path": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable/server.ts",
-        "line": 20,
-        "tool_name": "downloadArtifact",
+        "file_path": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable/index.js",
+        "line": 17,
+        "tool_name": "run_command",
         "sink": "child_process.exec",
         "symbol": null,
-        "code_snippet": "execSync(`sh -c \"${cmd}\"`);",
-        "score": 6,
+        "code_snippet": "exec(cmd);",
+        "score": 7,
         "evidence": [
           {
-            "name": "tool-input-to-sink",
+            "name": "executable-sink",
             "score": 3,
+            "detail": "Executable sink matched in runtime code: child_process.exec."
+          },
+          {
+            "name": "tool-input-to-sink",
+            "score": 2,
             "detail": "File appears to define MCP tool inputs alongside the matched sink."
           },
           {
             "name": "risky-parameter-name",
-            "score": 2,
-            "detail": "Schema or code references risky parameter names: cmd, command, download_path, path, url."
+            "score": 1,
+            "detail": "Schema or code references risky parameter names: cmd, command, path, url."
           },
           {
             "name": "risky-description",
@@ -73,10 +97,14 @@
             "detail": "Descriptions or nearby code mention shell, network, or download behavior."
           }
         ],
-        "message": "Potential command execution from user-controlled input."
+        "message": "Potential command execution from user-controlled input.",
+        "reachable": true,
+        "suppression_reason": null
       },
       "remediation_guidance": "Avoid shell execution with untrusted input. Prefer argument arrays, allowlists, and explicit command dispatch without string interpolation.",
-      "replay_trace": null
+      "replay_trace": null,
+      "replayable": true,
+      "non_replayable_reason": null
     },
     {
       "static_finding": {
@@ -85,23 +113,28 @@
         "language": "javascript",
         "severity": "high",
         "confidence": "high",
-        "file_path": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable/server.ts",
-        "line": 21,
-        "tool_name": "downloadArtifact",
+        "file_path": "/Users/sujinjeong/Git/mcp-vulscanner/data/fixtures/static/js/vulnerable/index.js",
+        "line": 29,
+        "tool_name": "fetch_url",
         "sink": "network-request",
         "symbol": null,
-        "code_snippet": "const response = await fetch(url, { headers: { \"x-base-url\": url } });",
-        "score": 6,
+        "code_snippet": "fetch(url);",
+        "score": 7,
         "evidence": [
           {
-            "name": "tool-input-to-sink",
+            "name": "executable-sink",
             "score": 3,
+            "detail": "Executable sink matched in runtime code: network-request."
+          },
+          {
+            "name": "tool-input-to-sink",
+            "score": 2,
             "detail": "File appears to define MCP tool inputs alongside the matched sink."
           },
           {
             "name": "risky-parameter-name",
-            "score": 2,
-            "detail": "Schema or code references risky parameter names: cmd, command, download_path, path, url."
+            "score": 1,
+            "detail": "Schema or code references risky parameter names: cmd, command, path, url."
           },
           {
             "name": "risky-description",
@@ -109,10 +142,14 @@
             "detail": "Descriptions or nearby code mention shell, network, or download behavior."
           }
         ],
-        "message": "Potential outbound request from user-controlled URL or request metadata."
+        "message": "Potential outbound request from user-controlled URL or request metadata.",
+        "reachable": true,
+        "suppression_reason": null
       },
       "remediation_guidance": "Disallow caller-controlled outbound destinations. Normalize and allowlist hosts, strip dangerous headers/query overrides, and block redirect chains to untrusted origins.",
-      "replay_trace": null
+      "replay_trace": null,
+      "replayable": true,
+      "non_replayable_reason": null
     }
   ],
   "reproduced_findings": [],

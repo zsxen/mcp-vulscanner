@@ -3,7 +3,7 @@
   "project_name": "mcp-fetch-server",
   "vulnerability_class": "ssrf",
   "expected_label": "positive",
-  "mode": "hybrid",
+  "mode": "static",
   "static_findings_count": 1,
   "tool_called": "",
   "dynamic_attempted": false,
@@ -16,7 +16,5 @@
     "stderr_lines": [],
     "outbound_requests": []
   },
-  "errors": [
-    "hybrid replay skipped: stdio arbitrary-file-write only"
-  ]
+  "errors": []
 }
